@@ -51,7 +51,7 @@ Vue.component('transfer-component', {
 	},
 	data: function() {
 		return {
-			currency: 'GOLOS',
+			currency: this.value.amount.split(' ')[1],
 		}
 	},
 	computed: {
