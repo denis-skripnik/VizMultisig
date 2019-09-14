@@ -318,8 +318,10 @@ var app = new Vue({
 					return 'Owner';
 				else if (this.proposal.required_active_approvals.includes(this.settings.signatory))
 					return 'Active';
+				else if (this.proposal.required_posting_approvals.includes(this.settings.signatory))
+					return 'Posting';
 				else
-					return 'Posting'; 
+					return 'Signatory';
 			} else {
 				return '';
 			}
