@@ -243,6 +243,9 @@ var app = new Vue({
 				this.proposals = [];
 				this.findProposal(author, title);
 			} else {
+				var timeOffset = new Date().getTimezoneOffset() * 60 * 1000;
+				var localTime = new Date(new Date(proposal.expiration_time + 'Z').valueOf() - timeOffset).toISOString().split('.')[0].slice(0, -3);
+				this.expiration_time_local = localTime;
 				this.proposal = cloneDeep(proposal);
 				this.state.page = 'review';
 			}
