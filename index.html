@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>GolosMultisigInterface</title>
+
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css" rel="stylesheet">
+
+		<link rel="stylesheet" href="./bulma-pageloader.min.css">
+
+		<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+		<!-- версия для разработки, отображает полезные предупреждения в консоли -->
+		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<!-- production-версия, оптимизированная для размера и скорости 
+	  <script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+		<script src="./golos.min.js"></script>
+		<script src="./lodash.clonedeep.js"></script>
+	</head>
+
+	<body>
+		<div id="app">
+			<pageloader-component :active="state.pageLoading" title="Loading"></pageloader-component>
+			<section class="section has-background-primary">
+				<nav class="level is-centered">
+					<div class="level-item has-text-centered">
+						<p :class="{'is-active': state.page == 'main'}"><a class="link is-info" @click="state.page = 'main'">Main</a></p>
+					</div>
+					<div class="level-item has-text-centered">
+						<p :class="{'is-active': state.page == 'dashboard'}"><a class="link is-info" @click="state.page = 'dashboard'">Dashboard</a></p>
+					</div>
+					<div class="level-item has-text-centered">
+						<p :class="{'is-active': state.page == 'create'}"><a class="link is-info" @click="switchToCreate()">Create proposal</a></p>
+					</div>
+				</nav>
+			</section>
+			<section v-if="state.page != 'main'" class="section notification has-background-white-ter" id="settings">
+				<label class="label has-text-centered">Settings</label>
+				<div v-if="state.settingsCollapsed == false">
+					<div class="columns">
+						<div class="column">
+							<div class="field">
+								<label class="label">Node</label>
+								<p class="control has-icons-left has-icons-right">
+								<input :class="['input', dynamicInputClass(state.node)]" type="text" v-model.lazy.trim="settings.node">
+								<span class="icon is-small is-left">
+									<i class="fas fa-server"></i>
+								</span>
+								<span class="icon is-small is-right">
+									<i :class="['fas', dynamicIconClass(state.node)]"></i>
+								</span>
+								</p>
+							</div>
+						</div>
+						<div class="column">
+							<div class="field">
+								<label class="label">
+									Multisig account
+									<span class="icon is-small" title="Not necessary a multisig account, but any account with transactions proposed to it">
+										<i class="fas fa-info-circle"></i>
+									</span>
+								</label>
+								<p class="control has-icons-left has-icons-right">
+								<input :class="['input', dynamicInputClass(state.account)]" type="text" v-model.lazy.trim="settings.account">
+								<span class="icon is-small is-left">
+									<i class="fas fa-user-circle"></i>
+								</span>
+								<span class="icon is-small is-right">
+									<i :class="['fas', dynamicIconClass(state.account)]"></i>
+								</span>
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="columns" v-if="state.page == 'dashboard'">
+						<div class="column">
+							<div class="field">
+								<label class="label">Signatory account</label>
+								<p class="control has-icons-left has-icons-right">
+								<input :class="['input', dynamicInputClass(state.signatory)]" type="text" v-model.lazy.trim="settings.signatory">
+								<span class="icon is-small is-left">
+									<i class="fas fa-user-circle"></i>
+								</span>
+								<span class="icon is-small is-right">
+									<i :class="['fas', dynamicIconClass(state.signatory)]"></i>
+								</span>
+								</p>
+							</div>
+						</div>
+						<div class="column">
+							<!-- Filtering settings -->
+						</div>
+					</div>
+				</div>
+				<br>
+				<button class="button is-medium is-fullwidth" v-on:click="state.settingsCollapsed = !state.settingsCollapsed">
+					<i v-bind:class="['fas', state.settingsCollapsed ? 'fa-chevron-down' : 'fa-chevron-up']"></i>
+				</button>
+			</section>
+			<section class="section has-background-white-ter">
+				<div class="container">
+					<div v-if="state.page == 'main'" class="contaner">
+						<h1>Multisig interface</h1>
+						<br>
+						<br>
+						<h2>Settings</h2>
+						<p>В настройках указывается API-нода и аккаунты мультисига и подписанта</p>
+						<br>
+						<br>
+						<h2>Dashboard</h2>
+						<p>После указания аккаунта мультисига из блокчейна загрузятся существующие предложенные транзакции. Требующие подписи подписанта отображаются желтым цветом. Нетребующие - зеленым</p>
+					</div>
+					<div v-if="state.page == 'dashboard'">
+						<div class="tile is-ancestor">
+							<div class="tile is-vertical">
+								<div v-for="(item, index) in proposals" :key="index">
+									<component is="dashboard-proposal-component" :proposal="item" :signatory="settings.signatory" @click="previewProposal(item.author, item.title)">
+									</component>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div v-else-if="state.page == 'create' || state.page == 'review'">
+						<div class="tile is-ancestor">
+							<div class="tile is-6 is-vertical">
+								<div class="tile is-parent">
+									<div class="tile is-child notification has-background-link">
+										<div>
+											<label class="label" title="Transaction will be completed at this time">Expiration time</label>
+											<div class="field is-grouped is-grouped-multiline">
+												<p class="control has-icons-left is-expanded">
+												<input class="input" type="date" v-model.lazy="expiration_date" :disabled="!proposal_editable" min="2017-06-01T08:30">
+												<span class="icon is-small is-left">
+													<i class="fas fa-calendar"></i>
+												</span>
+												</p>
+												<p class="control has-icons-left is-expanded">
+												<input class="input" type="time" v-model.lazy="expiration_time" :disabled="!proposal_editable" min="2017-06-01T08:30">
+												<span class="icon is-small is-left">
+													<i class="fas fa-clock"></i>
+												</span>
+												</p>
+											</div>
+											<div class="field">
+												<label class="label">Title</label>
+												<p class="control has-icons-left">
+												<input class="input" type="text" v-model.lazy.trim="proposal.title" :disabled="!proposal_editable">
+												<span class="icon is-small is-left">
+													<i class="fas fa-book"></i>
+												</span>
+												</p>
+											</div>
+											<div class="field">
+												<label class="label">Memo</label>
+												<p class="control">
+												<textarea class="textarea" v-model.lazy.trim="proposal.memo" :disabled="!proposal_editable"></textarea>
+												</p>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div v-if="state.page == 'create'">
+									<component v-for="(item, index) in proposal.proposed_operations" :key="index" :is="proposal.proposed_operations[index].op[0] + '-component'" v-model="proposal.proposed_operations[index].op[1]" :editable="proposal_editable" @delete-operation="deleteOperation(index)">
+									</component>
+								</div>
+								<div v-else>
+									<div v-for="(item, index) in proposal.proposed_operations">
+										<component :is="proposal.proposed_operations[index][0] + '-component'" v-model="proposal.proposed_operations[index][1]" :editable="proposal_editable">
+										</component>
+									</div>
+								</div>
+								<div class="tile is-parent" v-if="state.page == 'create'">
+									<div class="tile is-child">
+										<button class="button is-primary is-fullwidth" @click="state.chooseOperationModal = true">Add operation</button>
+									</div>
+								</div>
+							</div>
+							<div class="tile is-parent notification is-vertical is-6">
+								<div class="tile is-child">
+									<pre class="has-text-success has-background-dark" style="white-space: pre;">{{JSON.stringify(proposal, null, 2)}}</pre>
+								</div>
+							</div>
+						</div>
+						<div class="tile is-ancestor" v-if="state.page == 'create'">
+							<div class="tile is-vertical">
+								<div class="tile is-parent is-12">
+									<div class="tile is-child notification has-background-warning">
+										<div>
+											<label class="label">Author</label>
+											<div class="field">
+												<p class="control has-icons-left is-expanded">
+												<input class="input" type="text" v-model.lazy.trim="proposal.author" :disabled="!proposal_editable">
+												<span class="icon is-small is-left">
+													<i class="fas fa-user-circle"></i>
+												</span>
+												</p>
+											</div>
+											<div class="field">
+												<label class="label" title="Will be cleared after successful transaction submitting">Active key</label>
+												<p class="control has-icons-left">
+												<input class="input" type="text" v-model.lazy.trim="activeKey" :disabled="!proposal_editable">
+												<span class="icon is-small is-left">
+													<i class="fas fa-key"></i>
+												</span>
+												</p>
+											</div>
+											<div class="buttons is-centered">
+												<button class="button is-success" @click="submitProposal()">Submit proposal</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="tile is-ancestor" v-else>
+							<div class="tile is-vertical">
+								<div class="tile is-parent is-12">
+									<div class="tile is-child notification has-background-warning">
+										<div>
+											<label class="label">Signatory</label>
+											<div class="field">
+												<p class="control has-icons-left is-expanded">
+												<input class="input" type="text" v-model.lazy.trim="settings.signatory">
+												<span class="icon is-small is-left">
+													<i class="fas fa-user-circle"></i>
+												</span>
+												</p>
+											</div>
+											<div class="field">
+												<label class="label" title="Will be cleared after successful transaction submitting">{{ signatoryKeyRequirement }} key</label>
+												<p class="control has-icons-left">
+												<input class="input" type="text" v-model.lazy.trim="settings.signatoryKey">
+												<span class="icon is-small is-left">
+													<i class="fas fa-key"></i>
+												</span>
+												</p>
+											</div>
+											<div class="buttons is-centered">
+												<button class="button is-success" @click="approveProposal()">Approve proposal</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div :class="['modal', {'is-active': state.statusModal == true}]">
+						<div class="modal-background"></div>
+						<div class="modal-card">
+							<header class="modal-card-head">
+								<p class="modal-card-title">Modal title</p>
+								<button class="delete" aria-label="close"></button>
+							</header>
+							<section class="modal-card-body">
+							</section>
+							<footer class="modal-card-foot">
+								<button class="button is-success">Save changes</button>
+								<button class="button">Cancel</button>
+							</footer>
+						</div>
+					</div>
+					<modal-info-component :title="state.statusModalTitle" :active="state.statusModal" @close="state.statusModal = false">
+						<p>{{ state.statusModalContent }}</p>
+					</modal-info-component>
+					<modal-info-component title="Add new operation" :active="state.chooseOperationModal" @close="state.chooseOperationModal = false">
+						<aside class="menu">
+							<p class="menu-label">Account</p>
+							<ul class="menu-list">
+								<li><a @click="newOperation('account_update')">Account update</a></li>
+							</ul>
+							<p class="menu-label">Monetary</p>
+							<ul class="menu-list">
+								<li><a @click="newOperation('transfer')">Transfer</a></li>
+								<li><a @click="newOperation('delegate_vesting_shares')">Delegate Golos Power</a></li>
+								<li><a @click="newOperation('convert')">Convert GBG</a></li>
+								<li><a @click="newOperation('limit_order_create')">Exchange order</a></li>
+							</ul>
+							<p class="menu-label">Government</p>
+							<ul class="menu-list">
+								<li><a>Team Settings</a></li>
+								<li><a @click="newOperation('account_witness_vote')">Witness vote</a></li>
+							</ul>
+							<p class="menu-label">Social</p>
+							<ul class="menu-list">
+								<li><a @click="newOperation('vote')">Vote</a></li>
+								<li><a @click="newOperation('comment')">Post</a></li>
+							</ul>
+						</aside>
+					</modal-info-component>
+				</div>
+			</section>
+			<footer class="footer has-background-primary">
+			</footer>
+		</div>
+		<script src="./components/dashboard-proposal-component.js"></script>
+		<script src="./components/simplemde-component.js"></script>
+		<script src="./components/modal-info-component.js"></script>
+		<script src="./components/pageloader-component.js"></script>
+		<script src="./components/convert-component.js"></script>
+		<script src="./components/comment-component.js"></script>
+		<script src="./components/vote-component.js"></script>
+		<script src="./components/limit_order_create-component.js"></script>
+		<script src="./components/account_witness_vote-component.js"></script>
+		<script src="./components/account_update-component.js"></script>
+		<script src="./components/transfer-component.js"></script>
+		<script src="./components/delegate_vesting_shares-component.js"></script>
+
+		<script src="./index.js"></script>
+	</body>
+</html>

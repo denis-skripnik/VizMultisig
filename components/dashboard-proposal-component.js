@@ -1,0 +1,51 @@
+Vue.component('dashboard-proposal-component', {
+	template: `
+	<a @click="emitEvent('click')" >
+		<div class="tile is-parent">
+			<div :class="['tile', 'is-child', 'notification', 'has-text-black', {'has-background-primary': isPrimary, 'has-background-warning': isWarning}]">
+				<p class="title">{{ proposal.title }}</p>
+				<p class="subtitle">{{ '@' + proposal.author }}</p>
+				<p class="content">{{ proposal.memo }}</p>
+				<div class="content columns is-multiline">
+					<div v-for="item in signatories" class="column">
+						<code :class="requiredSignatories.includes(item) ? 'has-text-error' : 'has-text-primary'">@{{ item }}</code>
+					</div>
+				</div>
+			</div>
+		</div>
+	</a>
+	`,
+	props: ['proposal', 'signatory'],
+	computed: {
+		requiredSignatories: function() {
+			let owner = this.proposal.required_owner_approvals;
+			let active = this.proposal.required_active_approvals;
+			let posting = this.proposal.required_posting_approvals;
+			return this.mergeArrays(owner, this.mergeArrays(active, posting));
+		},
+		signatories: function() {
+			let owner = this.mergeArrays(this.proposal.required_owner_approvals, this.proposal.available_owner_approvals);
+			let active = this.mergeArrays(this.proposal.required_active_approvals, this.proposal.available_active_approvals);
+			let posting = this.mergeArrays(this.proposal.required_posting_approvals, this.proposal.available_posting_approvals);
+			return this.mergeArrays(owner, this.mergeArrays(active, posting));
+		},
+		isWarning: function() {
+			return	this.proposal.required_active_approvals.includes(this.signatory) ||
+					this.proposal.required_posting_approvals.includes(this.signatory) ||
+					this.proposal.required_owner_approvals.includes(this.signatory);
+		},
+		isPrimary: function() {
+			return !this.isWarning;
+		},
+	},
+	methods: {
+		mergeArrays(a, b) {
+			return a.concat(b.filter(function (item) {
+				return a.indexOf(item) < 0;
+			}));
+		},
+		emitEvent(name) {
+			this.$emit(name);
+		},
+	},
+});
