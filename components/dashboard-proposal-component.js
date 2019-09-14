@@ -18,9 +18,10 @@ Vue.component('dashboard-proposal-component', {
 	props: ['proposal', 'signatory'],
 	computed: {
 		requiredSignatories: function() {
-			let owner = this.proposal.required_owner_approvals;
-			let active = this.proposal.required_active_approvals;
-			let posting = this.proposal.required_posting_approvals;
+			var self = this;
+			let owner = this.proposal.required_owner_approvals.filter(function(item){return !self.proposal.available_owner_approvals.includes(item)});
+			let active = this.proposal.required_active_approvals.filter(function(item){return !self.proposal.available_active_approvals.includes(item)});
+			let posting = this.proposal.required_posting_approvals.filter(function(item){return !self.proposal.available_posting_approvals.includes(item)});
 			return this.mergeArrays(owner, this.mergeArrays(active, posting));
 		},
 		signatories: function() {
@@ -30,9 +31,9 @@ Vue.component('dashboard-proposal-component', {
 			return this.mergeArrays(owner, this.mergeArrays(active, posting));
 		},
 		isWarning: function() {
-			return	this.proposal.required_active_approvals.includes(this.signatory) ||
-					this.proposal.required_posting_approvals.includes(this.signatory) ||
-					this.proposal.required_owner_approvals.includes(this.signatory);
+			return	(this.proposal.required_active_approvals.includes(this.signatory) && !this.proposal.available_active_approvals.includes(this.signatory)) ||
+					(this.proposal.required_posting_approvals.includes(this.signatory) && !this.proposal.available_posting_approvals.includes(this.signatory)) ||
+					(this.proposal.required_owner_approvals.includes(this.signatory) && !this.proposal.available_owner_approvals.includes(this.signatory));
 		},
 		isPrimary: function() {
 			return !this.isWarning;
