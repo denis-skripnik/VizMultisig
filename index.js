@@ -12,13 +12,13 @@ var app = new Vue({
 		settings: {
 			collapsed: false,
 			node: '',
-			account: 'worthless',
+			account: '',
 			signatory: '',
 			signatoryKey: '',
 		},
 		state: {
 			getParams: GET_params,
-			page: 'dashboard', // ['main', 'dashboard', 'create', 'review']
+			page: 'main', // ['main', 'dashboard', 'create', 'review']
 			pageLoading: false,
 			settingsCollapsed: false,
 			node: 'none', // ['ok', 'processing', 'error', 'none']
@@ -210,7 +210,7 @@ var app = new Vue({
 				case 'vote':
 					return {voter: this.settings.account, author: '', permlink: '', weight: 0};
 				case 'transfer':
-					return {from: this.settings.account, to: '', amount: '0.000 GOLOS'};
+					return {from: this.settings.account, to: '', amount: '0.000 GOLOS', memo: ''};
 				case 'delegate_vesting_shares':
 					return {delegator: this.settings.account, delegatee: '', vesting_shares: '0.000000 GESTS'};
 				case 'limit_order_create':
@@ -295,7 +295,7 @@ var app = new Vue({
 		},
 		showProposalCreated: function(author, title) {
 			this.statusModalTitle = 'Proposal created'
-			this.statusModalContent = 'Proposal link: https://worthless-man.github.io/GolosMultisig/?page=review&author=' +
+			this.statusModalContent = 'Proposal link: https://worthless-man.github.io/GolosMultisig/index.html?page=review&author=' +
 				encodeURI(author) + '&title=' + encodeURI(title);
 			this.state.statusModal = true;
 		},
