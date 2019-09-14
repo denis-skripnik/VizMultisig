@@ -60,7 +60,7 @@ Vue.component('limit_order_create-component', {
 	},
 	data: function() {
 		return {
-			type: 'Buy',
+			type: ((this.value.amount_to_sell.split(' ')[1] == 'GBG') ? 'Sell' : 'Buy'),
 		}
 	},
 	computed: {
