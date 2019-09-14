@@ -210,7 +210,7 @@ var app = new Vue({
 				case 'vote':
 					return {voter: this.settings.account, author: '', permlink: '', weight: 0};
 				case 'transfer':
-					return {from: this.settings.account, to: '', amount: '0.000 GOLOS'};
+					return {from: this.settings.account, to: '', amount: '0.000 GOLOS', memo: ''};
 				case 'delegate_vesting_shares':
 					return {delegator: this.settings.account, delegatee: '', vesting_shares: '0.000000 GESTS'};
 				case 'limit_order_create':
