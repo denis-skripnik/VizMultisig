@@ -44,7 +44,7 @@ Vue.component('account_witness_vote-component', {
 	},
 	data: function() {
 		return {
-			vote: 'Vote',
+			vote: ((this.value.approve == true) ? 'Vote' : 'Unvote'),
 		}
 	},
 	computed: {
