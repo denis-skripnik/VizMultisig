@@ -295,7 +295,7 @@ var app = new Vue({
 		},
 		showProposalCreated: function(author, title) {
 			this.statusModalTitle = 'Proposal created'
-			this.statusModalContent = 'Proposal link: https://worthless-man.github.io/GolosMultisig/?page=review&author=' +
+			this.statusModalContent = 'Proposal link: https://worthless-man.github.io/GolosMultisig/index.html?page=review&author=' +
 				encodeURI(author) + '&title=' + encodeURI(title);
 			this.state.statusModal = true;
 		},
