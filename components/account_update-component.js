@@ -2,7 +2,7 @@ Vue.component('account_update-component', {
 	template: `
 <div class="tile is-parent">
 	<div class="tile is-child notification has-background-info">
-		<label class="label has-text-centered">Transfer</label>
+		<label class="label has-text-centered">Update account</label>
 		<div class="container">
 			<div v-if="value.owner" class="has-background-link notification">
 				<button v-if="editable" @click="removeSection('owner')" class="button" style="position: absolute;right: 0.5rem;top: 0.5rem;">

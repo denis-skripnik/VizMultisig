@@ -2,7 +2,7 @@ Vue.component('limit_order_create-component', {
 	template: `
 <div class="tile is-parent">
 	<div class="tile is-child notification has-background-info">
-		<label class="label has-text-centered">Transfer</label>
+		<label class="label has-text-centered">Exchange order</label>
 		<div class="container">
 			<div class="field">
 				<label class="label">Order owner</label>
