@@ -12,13 +12,13 @@ var app = new Vue({
 		settings: {
 			collapsed: false,
 			node: '',
-			account: 'worthless',
+			account: '',
 			signatory: '',
 			signatoryKey: '',
 		},
 		state: {
 			getParams: GET_params,
-			page: 'dashboard', // ['main', 'dashboard', 'create', 'review']
+			page: 'main', // ['main', 'dashboard', 'create', 'review']
 			pageLoading: false,
 			settingsCollapsed: false,
 			node: 'none', // ['ok', 'processing', 'error', 'none']
