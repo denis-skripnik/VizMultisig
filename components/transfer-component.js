@@ -39,6 +39,15 @@ Vue.component('transfer-component', {
 				</div>
 				</div>
 			</div>
+			<div class="field">
+				<label class="label">Memo</label>
+				<p class="control has-icons-left">
+				<input class="input" type="text" :value="value.memo" @change="update('memo', $event.target.value.trim())" :disabled="editable == false">
+				<span class="icon is-small is-left">
+					<i class="fas fa-clipboard"></i>
+				</span>
+				</p>
+			</div>
 		</div>
 		<button v-if="editable" class="delete" @click="suicide()">
 		</button>
