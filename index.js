@@ -235,6 +235,8 @@ var app = new Vue({
     					    body: "",
     					    json_metadata: "{}"
     					};
+				case 'transfer_to_vesting':
+					return {from: this.settings.account, to: this.settings.account, amount: '0.000 GOLOS'};
 			}
 		},
 		previewProposal: function(author, title) {
