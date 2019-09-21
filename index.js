@@ -175,7 +175,7 @@ var app = new Vue({
 					} else {
 						self.proposal = self.newProposal();
 						self.settings.signatoryKey = '';
-						this.showProposalApproved();
+						self.showProposalApproved();
 					}
 				}
 			);
