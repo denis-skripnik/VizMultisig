@@ -298,19 +298,19 @@ var app = new Vue({
 		},
 		showProposalApproved: function() {
 			this.statusModalTitle = 'Proposal approved'
-			this.state.statusModal = true;
+			this.$nextTick(function(){this.state.statusModal = true});
 		},
 		showProposalCreated: function(author, title) {
 			this.statusModalTitle = 'Proposal created'
 			this.statusModalContent = 'Proposal link: https://worthless-man.github.io/GolosMultisig/index.html?page=review&author=' +
 				encodeURI(author) + '&title=' + encodeURI(title);
-			this.state.statusModal = true;
+			this.$nextTick(function(){this.state.statusModal = true});
 		},
 		showError: function(err) {
 			console.error(err);
 			this.state.statusModalTitle = 'Error';
 			this.state.statusModalContent = err;
-			this.state.statusModal = true;
+			this.$nextTick(function(){this.state.statusModal = true});
 		},
 	},
 	computed: {
