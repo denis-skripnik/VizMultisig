@@ -1,22 +1,13 @@
-Vue.component('delegate_vesting_shares-component', {
+Vue.component('withdraw_vesting-component', {
 	template: `
 <div class="tile is-parent">
 	<div class="tile is-child notification has-background-info">
 		<label class="label has-text-centered">Delegate GOLOS Power</label>
 		<div class="container">
 			<div class="field">
-				<label class="label">Delegator (from)</label>
+				<label class="label">Account</label>
 				<p class="control has-icons-left">
-				<input class="input" type="text" :value="value.delegator" @change="update('delegator', $event.target.value.trim())" :disabled="editable == false">
-				<span class="icon is-small is-left">
-					<i class="fas fa-user-circle"></i>
-				</span>
-				</p>
-			</div>
-			<div class="field">
-				<label class="label">Delegatee (to)</label>
-				<p class="control has-icons-left">
-				<input class="input" type="text" :value="value.delegatee" @change="update('delegatee', $event.target.value.trim())" :disabled="editable == false">
+				<input class="input" type="text" :value="value.account" @change="update('account', $event.target.value.trim())" :disabled="editable == false">
 				<span class="icon is-small is-left">
 					<i class="fas fa-user-circle"></i>
 				</span>

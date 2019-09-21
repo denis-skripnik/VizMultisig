@@ -237,6 +237,8 @@ var app = new Vue({
     					};
 				case 'transfer_to_vesting':
 					return {from: this.settings.account, to: this.settings.account, amount: '0.000 GOLOS'};
+				case 'withdraw_vesting':
+					return {account: this.settings.account, vesting_shares: '0.000000 GESTS'}
 			}
 		},
 		previewProposal: function(author, title) {
