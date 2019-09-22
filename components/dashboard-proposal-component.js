@@ -6,10 +6,10 @@ Vue.component('dashboard-proposal-component', {
 				<p class="title">{{ proposal.title }}</p>
 				<p class="subtitle">{{ '@' + proposal.author }}</p>
 				<p class="content">{{ proposal.memo }}</p>
-				<div class="content columns is-multiline">
-					<div v-for="item in signatories" class="column">
-						<code :class="requiredSignatories.includes(item) ? 'has-text-error' : 'has-text-primary'">@{{ item }}</code>
-					</div>
+				<div class="content tags">
+					<span v-for="item in signatories" :class="['tag', requiredSignatories.includes(item) ? 'is-danger' : 'is-success']">
+						@{{ item }}
+					</span>
 				</div>
 			</div>
 		</div>
