@@ -7,7 +7,7 @@ Vue.component('dashboard-proposal-component', {
 				<p class="subtitle">{{ '@' + proposal.author }}</p>
 				<p class="content">{{ proposal.memo }}</p>
 				<div class="content tags">
-					<span v-for="item in signatories" :class="['tag', requiredSignatories.includes(item) ? 'is-danger' : 'is-success']">
+					<span v-for="item in signatories" :class="['tag', 'has-text-weight-bold', 'is-medium', requiredSignatories.includes(item) ? 'is-danger' : 'is-success']">
 						@{{ item }}
 					</span>
 				</div>
