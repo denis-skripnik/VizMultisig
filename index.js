@@ -5,6 +5,7 @@ var GET_params = {};
 for(var pair of searchParams) {
    GET_params[pair[0]] = pair[1]; 
 }
+golos.config.set('websocket', 'wss://api.golos.blckchnd.com/ws');
 
 var app = new Vue({
 	el: '#app',
@@ -257,42 +258,130 @@ var app = new Vue({
 		findProposal: function(author, title) {
 			this.state.pageLoading = true;
 			var self = this;
-			golos.api.getProposedTransactions(author, this.proposals.length, 100, function(err, res) {
+			golos.api.getProposedTransactions(author, this.proposals.length, 100, function(err, proposals) {
 				if (err) {
 					self.showError(err);
 				} else {
-					for (proposal of res) {
-						self.proposals.push(proposal);
+					mergeArrays = (a, b) => {
+						return a.concat(b.filter(function (item) {
+							return a.indexOf(item) < 0;
+						}));
+					};
+					var nicknames = [];
+					for (proposal of proposals) {
+						nicknames = mergeArrays(nicknames, proposal.required_owner_approvals);
+						nicknames = mergeArrays(nicknames, proposal.required_active_approvals);
+						nicknames = mergeArrays(nicknames, proposal.required_posting_approvals);
 					}
-					if (res.length == 100) {
-						self.findProposal(author, title);
-					} else {
-						var proposal = self.proposals.find((prop) => {if (prop.author == author && prop.title == title) return true;});
-						self.state.pageLoading = false;
-						if (proposal == undefined) {
-							self.showError('Proposal ' + author + '/' + title + ' not found');
-						} else {
-							self.previewProposal(author, title);
+					golos.api.getAccounts(nicknames, function(error, accounts){
+						if (error) {
+							self.showError(error);
 						}
-					}
+						var accs = {};
+						for (account of accounts) {
+							accs[account.name] = {owner: account.owner, active: account.active, posting: account.posting};
+						}
+						for (proposal of proposals) {
+							var owner = [];
+							var active = [];
+							var posting = [];
+							for (acc of proposal.required_owner_approvals) {
+								if (accs[acc].owner.key_auths.length != 0) {
+									owner.push(acc)
+								}
+								owner = mergeArrays(owner, accs[acc].owner.account_auths.map(function(val){return val[0]}));
+							}
+							for (acc of proposal.required_active_approvals) {
+								if (accs[acc].active.key_auths.length != 0) {
+									active.push(acc)
+								}
+								active = mergeArrays(active, accs[acc].active.account_auths.map(function(val){return val[0]}));
+							}
+							for (acc of proposal.required_posting_approvals) {
+								if (accs[acc].posting.key_auths.length != 0) {
+									posting.push(acc)
+								}
+								posting = mergeArrays(posting, accs[acc].posting.account_auths.map(function(val){return val[0]}));
+							}
+							proposal.required_owner_approvals = owner;
+							proposal.required_active_approvals = active;
+							proposal.required_posting_approvals = posting;
+							self.proposals.push(cloneDeep(proposal));
+						}
+						if (proposals.length == 100) {
+							self.findProposal(author, title);
+						} else {
+							var proposal = self.proposals.find((prop) => {if (prop.author == author && prop.title == title) return true;});
+							self.state.pageLoading = false;
+							if (proposal == undefined) {
+								self.showError('Proposal ' + author + '/' + title + ' not found');
+							} else {
+								self.previewProposal(author, title);
+							}
+						}
+					});
 				}
 			});
 		},
 		findAllProposals: function(author) {
 			this.state.pageLoading = true;
 			var self = this;
-			golos.api.getProposedTransactions(author, this.proposals.length, 100, function(err, res) {
+			golos.api.getProposedTransactions(author, this.proposals.length, 100, function(err, proposals) {
 				if (err) {
 					self.showError(err);
 				} else {
-					for (proposal of res) {
-						self.proposals.push(cloneDeep(proposal));
+					mergeArrays = (a, b) => {
+						return a.concat(b.filter(function (item) {
+							return a.indexOf(item) < 0;
+						}));
+					};
+					var nicknames = [];
+					for (proposal of proposals) {
+						nicknames = mergeArrays(nicknames, proposal.required_owner_approvals);
+						nicknames = mergeArrays(nicknames, proposal.required_active_approvals);
+						nicknames = mergeArrays(nicknames, proposal.required_posting_approvals);
 					}
-					if (res.length == 100) {
-						self.findAllProposals(author);
-					} else {
-						self.state.pageLoading = false;
-					}
+					golos.api.getAccounts(nicknames, function(error, accounts){
+						if (error) {
+							self.showError(error);
+						}
+						var accs = {};
+						for (account of accounts) {
+							accs[account.name] = {owner: account.owner, active: account.active, posting: account.posting};
+						}
+						for (proposal of proposals) {
+							var owner = [];
+							var active = [];
+							var posting = [];
+							for (acc of proposal.required_owner_approvals) {
+								if (accs[acc].owner.key_auths.length != 0) {
+									owner.push(acc)
+								}
+								owner = mergeArrays(owner, accs[acc].owner.account_auths.map(function(val){return val[0]}));
+							}
+							for (acc of proposal.required_active_approvals) {
+								if (accs[acc].active.key_auths.length != 0) {
+									active.push(acc)
+								}
+								active = mergeArrays(active, accs[acc].active.account_auths.map(function(val){return val[0]}));
+							}
+							for (acc of proposal.required_posting_approvals) {
+								if (accs[acc].posting.key_auths.length != 0) {
+									posting.push(acc)
+								}
+								posting = mergeArrays(posting, accs[acc].posting.account_auths.map(function(val){return val[0]}));
+							}
+							proposal.required_owner_approvals = owner;
+							proposal.required_active_approvals = active;
+							proposal.required_posting_approvals = posting;
+							self.proposals.push(cloneDeep(proposal));
+						}
+						if (proposals.length == 100) {
+							self.findAllProposals(author);
+						} else {
+							self.state.pageLoading = false;
+						}
+					});
 				}
 			});
 		},
@@ -316,16 +405,16 @@ var app = new Vue({
 	computed: {
 		signatoryKeyRequirement: function() {
 			if (this.proposal.required_owner_approvals != undefined &&
-					this.proposal.required_active_approvals != undefined &&
-					this.proposal.required_posting_approvals != undefined) {
+				this.proposal.required_active_approvals != undefined &&
+				this.proposal.required_posting_approvals != undefined) {
 				if (this.proposal.required_owner_approvals.includes(this.settings.signatory))
-					return 'Owner';
+				return 'Owner';
 				else if (this.proposal.required_active_approvals.includes(this.settings.signatory))
-					return 'Active';
+				return 'Active';
 				else if (this.proposal.required_posting_approvals.includes(this.settings.signatory))
-					return 'Posting';
+				return 'Posting';
 				else
-					return 'Signatory';
+				return 'Signatory';
 			} else {
 				return '';
 			}
@@ -352,7 +441,6 @@ var app = new Vue({
 	},
 	mounted: function() {
 		this.settings.node = 'wss://api.golos.blckchnd.com/ws';
-
 		if (this.state.getParams.page == 'review' && this.state.getParams.author !== undefined && this.state.getParams.title !== undefined) {
 			this.state.page = 'review';
 			this.previewProposal(decodeURI(this.state.getParams.author), decodeURI(this.state.getParams.title));

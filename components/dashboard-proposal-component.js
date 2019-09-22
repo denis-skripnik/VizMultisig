@@ -20,8 +20,15 @@ Vue.component('dashboard-proposal-component', {
 		requiredSignatories: function() {
 			var self = this;
 			let owner = this.proposal.required_owner_approvals.filter(function(item){return !self.proposal.available_owner_approvals.includes(item)});
-			let active = this.proposal.required_active_approvals.filter(function(item){return !self.proposal.available_active_approvals.includes(item)});
-			let posting = this.proposal.required_posting_approvals.filter(function(item){return !self.proposal.available_posting_approvals.includes(item)});
+			let active = this.proposal.required_active_approvals.filter(function(item){
+				return !self.proposal.available_owner_approvals.includes(item) &&
+						!self.proposal.available_active_approvals.includes(item);
+			});
+			let posting = this.proposal.required_posting_approvals.filter(function(item){
+				return !self.proposal.available_owner_approvals.includes(item) &&
+						!self.proposal.available_active_approvals.includes(item) &&
+						!self.proposal.available_posting_approvals.includes(item);
+			});
 			return this.mergeArrays(owner, this.mergeArrays(active, posting));
 		},
 		signatories: function() {
@@ -31,9 +38,18 @@ Vue.component('dashboard-proposal-component', {
 			return this.mergeArrays(owner, this.mergeArrays(active, posting));
 		},
 		isWarning: function() {
-			return	(this.proposal.required_active_approvals.includes(this.signatory) && !this.proposal.available_active_approvals.includes(this.signatory)) ||
-					(this.proposal.required_posting_approvals.includes(this.signatory) && !this.proposal.available_posting_approvals.includes(this.signatory)) ||
-					(this.proposal.required_owner_approvals.includes(this.signatory) && !this.proposal.available_owner_approvals.includes(this.signatory));
+			var req_owner = this.proposal.required_owner_approvals.includes(this.signatory) &&
+							!this.proposal.available_owner_approvals.includes(this.signatory);
+			
+			var req_active = this.proposal.required_active_approvals.includes(this.signatory) &&
+							!this.proposal.available_owner_approvals.includes(this.signatory) &&
+							!this.proposal.available_active_approvals.includes(this.signatory);
+			
+			var req_posting = this.proposal.required_posting_approvals.includes(this.signatory) &&
+							!this.proposal.available_owner_approvals.includes(this.signatory) &&
+							!this.proposal.available_active_approvals.includes(this.signatory) &&
+							!this.proposal.available_posting_approvals.includes(this.signatory)
+			return req_owner || req_active || req_posting;
 		},
 		isPrimary: function() {
 			return !this.isWarning;
