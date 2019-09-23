@@ -202,7 +202,7 @@
 											<div class="field">
 												<label class="label" title="Will be cleared after successful transaction submitting">Active key</label>
 												<p class="control has-icons-left">
-												<input class="input" type="text" v-model.lazy.trim="activeKey" :disabled="!proposal_editable">
+												<input class="input" type="password" v-model.lazy.trim="activeKey" :disabled="!proposal_editable">
 												<span class="icon is-small is-left">
 													<i class="fas fa-key"></i>
 												</span>
@@ -233,7 +233,7 @@
 											<div class="field">
 												<label class="label" title="Will be cleared after successful transaction submitting">{{ signatoryKeyRequirement }} key</label>
 												<p class="control has-icons-left">
-												<input class="input" type="text" v-model.lazy.trim="settings.signatoryKey">
+												<input class="input" type="password" v-model.lazy.trim="settings.signatoryKey">
 												<span class="icon is-small is-left">
 													<i class="fas fa-key"></i>
 												</span>
