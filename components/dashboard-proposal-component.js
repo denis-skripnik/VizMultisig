@@ -32,10 +32,7 @@ Vue.component('dashboard-proposal-component', {
 			return this.mergeArrays(owner, this.mergeArrays(active, posting));
 		},
 		signatories: function() {
-			let owner = this.mergeArrays(this.proposal.required_owner_approvals, this.proposal.available_owner_approvals);
-			let active = this.mergeArrays(this.proposal.required_active_approvals, this.proposal.available_active_approvals);
-			let posting = this.mergeArrays(this.proposal.required_posting_approvals, this.proposal.available_posting_approvals);
-			return this.mergeArrays(owner, this.mergeArrays(active, posting));
+			return this.mergeArrays(this.mergeArrays(this.proposal.required_owner_approvals, this.proposal.required_active_approvals), this.proposal.required_posting_approvals);
 		},
 		isWarning: function() {
 			var req_owner = this.proposal.required_owner_approvals.includes(this.signatory) &&
