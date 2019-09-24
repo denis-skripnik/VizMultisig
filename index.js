@@ -1,10 +1,5 @@
-var searchParams = new URLSearchParams(window.location.search);
+history.replaceState({locationSearch: window.location.search}, 'GolosMultisigInterface', window.location.origin + window.location.pathname + window.location.search);
 
-var GET_params = {};
-
-for(var pair of searchParams) {
-   GET_params[pair[0]] = pair[1]; 
-}
 golos.config.set('websocket', 'wss://api.golos.blckchnd.com/ws');
 
 var app = new Vue({
@@ -18,7 +13,6 @@ var app = new Vue({
 			signatoryKey: '',
 		},
 		state: {
-			getParams: GET_params,
 			page: 'main', // ['main', 'dashboard', 'create', 'review']
 			pageLoading: false,
 			settingsCollapsed: false,
@@ -158,9 +152,11 @@ var app = new Vue({
 			if (this.proposal.required_posting_approvals.includes(this.settings.signatory))
 				posting_approvals_to_add.push(this.settings.signatory);
 
+			var author = this.proposal.author;
+			var title = this.proposal.title;
 			golos.broadcast.proposalUpdate(key,
-				this.proposal.author,
-				this.proposal.title,
+				author,
+				title,
 				active_approvals_to_add,
 				[], // active_approvals_to_remove
 				owner_approvals_to_add,
@@ -174,6 +170,10 @@ var app = new Vue({
 					if (err) {
 						self.showError(err)
 					} else {
+						var index = self.proposals.findIndex((prop) => {if (prop.author == author && prop.title == title) return true;});
+						self.proposals[index].available_owner_approvals = self.mergeArrays(self.proposals[index].available_owner_approvals, owner_approvals_to_add);
+						self.proposals[index].available_active_approvals = self.mergeArrays(self.proposals[index].available_active_approvals, active_approvals_to_add);
+						self.proposals[index].available_posting_approvals = self.mergeArrays(self.proposals[index].available_posting_approvals, posting_approvals_to_add);
 						self.proposal = self.newProposal();
 						self.settings.signatoryKey = '';
 						self.showProposalApproved();
@@ -255,6 +255,11 @@ var app = new Vue({
 				this.state.page = 'review';
 			}
 		},
+		mergeArrays: function(a, b) {
+			return a.concat(b.filter(function (item) {
+				return a.indexOf(item) < 0;
+			}));
+		},
 		findProposal: function(author, title) {
 			this.state.pageLoading = true;
 			var self = this;
@@ -262,11 +267,7 @@ var app = new Vue({
 				if (err) {
 					self.showError(err);
 				} else {
-					mergeArrays = (a, b) => {
-						return a.concat(b.filter(function (item) {
-							return a.indexOf(item) < 0;
-						}));
-					};
+					mergeArrays = self.mergeArrays;
 					var nicknames = [];
 					for (proposal of proposals) {
 						nicknames = mergeArrays(nicknames, proposal.required_owner_approvals);
@@ -330,11 +331,7 @@ var app = new Vue({
 				if (err) {
 					self.showError(err);
 				} else {
-					mergeArrays = (a, b) => {
-						return a.concat(b.filter(function (item) {
-							return a.indexOf(item) < 0;
-						}));
-					};
+					mergeArrays = self.mergeArrays;
 					var nicknames = [];
 					for (proposal of proposals) {
 						nicknames = mergeArrays(nicknames, proposal.required_owner_approvals);
@@ -401,6 +398,34 @@ var app = new Vue({
 			this.state.statusModalContent = err;
 			this.$nextTick(function(){this.state.statusModal = true});
 		},
+		updatePage: function(newLocationSearch, noPush) {
+			var searchParams = new URLSearchParams(newLocationSearch);
+			var params = {};
+			for(var pair of searchParams) {
+				params[pair[0]] = pair[1]; 
+			}
+			if (params.multisig)
+				this.settings.account = params.multisig;
+			if (params.signatory)
+				this.settings.account = params.signatory;
+			if (params.page == 'review' && params.author !== undefined && params.title !== undefined) {
+				this.state.page = 'review';
+				this.previewProposal(decodeURI(params.author), decodeURI(params.title));
+			} else if (params.page == 'dashboard') {
+				this.state.page = 'dashboard';
+			} else if (params.page == 'create') {
+				this.switchToCreate();
+			} else if (params.page == 'main') {
+				this.state.page = 'main';
+			}
+			if (!noPush)
+				history.pushState({locationSearch: newLocationSearch}, 'GolosMultisigInterface', window.location.origin + window.location.pathname + newLocationSearch);
+		},
+		onpopstateCallback: function(event) {
+			if (history.state && history.state.locationSearch) {
+				this.updatePage(history.state.locationSearch, true);
+			}
+		},
 	},
 	computed: {
 		signatoryKeyRequirement: function() {
@@ -440,10 +465,8 @@ var app = new Vue({
 		},
 	},
 	mounted: function() {
+		window.addEventListener('popstate', this.onpopstateCallback, false);
 		this.settings.node = 'wss://api.golos.blckchnd.com/ws';
-		if (this.state.getParams.page == 'review' && this.state.getParams.author !== undefined && this.state.getParams.title !== undefined) {
-			this.state.page = 'review';
-			this.previewProposal(decodeURI(this.state.getParams.author), decodeURI(this.state.getParams.title));
-		}
+		this.updatePage(window.location.search);
 	},
 })

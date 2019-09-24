@@ -28,13 +28,13 @@
 			<section class="section has-background-primary">
 				<nav class="level is-centered">
 					<div class="level-item has-text-centered">
-						<p :class="{'is-active': state.page == 'main'}"><a class="link is-info" @click="state.page = 'main'">Main</a></p>
+						<p :class="{'is-active': state.page == 'main'}"><a class="link is-info" @click="updatePage('?page=main')">Main</a></p>
 					</div>
 					<div class="level-item has-text-centered">
-						<p :class="{'is-active': state.page == 'dashboard'}"><a class="link is-info" @click="state.page = 'dashboard'">Dashboard</a></p>
+						<p :class="{'is-active': state.page == 'dashboard'}"><a class="link is-info" @click="updatePage('?page=dashboard')">Dashboard</a></p>
 					</div>
 					<div class="level-item has-text-centered">
-						<p :class="{'is-active': state.page == 'create'}"><a class="link is-info" @click="switchToCreate()">Create proposal</a></p>
+						<p :class="{'is-active': state.page == 'create'}"><a class="link is-info" @click="updatePage('?page=create')">Create proposal</a></p>
 					</div>
 				</nav>
 			</section>
@@ -118,7 +118,7 @@
 						<div class="tile is-ancestor">
 							<div class="tile is-vertical">
 								<div v-for="(item, index) in proposals" :key="index">
-									<component is="dashboard-proposal-component" :proposal="item" :signatory="settings.signatory" @click="previewProposal(item.author, item.title)">
+									<component is="dashboard-proposal-component" :proposal="item" :signatory="settings.signatory" @click="updatePage('?page=review&author=' + item.author + '&title=' + item.title)">
 									</component>
 								</div>
 							</div>
