@@ -4,6 +4,15 @@ Vue.component('account_update-component', {
 	<div class="tile is-child notification has-background-info">
 		<label class="label has-text-centered">Update account</label>
 		<div class="container">
+			<div class="field">
+				<label class="label">Account</label>
+				<div class="control is-expanded has-icons-left">
+				<input class="input" type="text" :value="value.account" @change="update('account', $event.target.value.trim())" :disabled="editable == false">
+				<span class="icon is-small is-left">
+					<i class="fas fa-user-circle"></i>
+				</span>
+				</div>
+			</div>
 			<div v-if="value.owner" class="has-background-link notification">
 				<button v-if="editable" @click="removeSection('owner')" class="button" style="position: absolute;right: 0.5rem;top: 0.5rem;">
 					<span class="icon is-small">
@@ -138,12 +147,30 @@ Vue.component('account_update-component', {
 	},
 	data: function() {
 		return {
+			authorities: {
+				owner: {weight_threshold: 1, account_auths: [], key_auths: []},
+				active: {weight_threshold: 1, account_auths: [], key_auths: []},
+				posting: {weight_threshold: 1, account_auths: [], key_auths: []},
+			}
 		}
 	},
 	methods: {
+		loadAuthorities() {
+			var self = this;
+			if (this.value.account) {
+				golos.api.getAccounts([this.value.account], function(err, res) {
+					if (res.length == 1) {
+						self.authorities.owner = res[0].owner;
+						self.authorities.active = res[0].active;
+						self.authorities.posting = res[0].posting;
+					}
+				});
+			}
+		},
 		addSeciton(type) {
 			var copy = cloneDeep(this.value);
-			copy[type] = {weight_threshold: 1, account_auths: [], key_auths: []};
+			copy[type] = cloneDeep(this.authorities[type]);
+			console.log(copy[type])
 			this.$emit('input', copy);
 		},
 		removeSection(type) {
@@ -192,6 +219,14 @@ Vue.component('account_update-component', {
 		update(key, value) {
 			this.$emit('input', { ...this.value, [key]: value })
 		},
+	},
+	watch: {
+		'value.account': function() {
+			this.loadAuthorities();
+		},
+	},
+	mounted: function() {
+		this.loadAuthorities();
 	},
 })
 
