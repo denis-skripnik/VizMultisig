@@ -56,11 +56,6 @@ var app = new Vue({
 		'settings.account': function (newAcc, oldAcc) {
 			this.state.account = 'processing';
 			var self = this;
-			if (this.state.node != 'ok')
-			{
-				this.state.account = 'error';
-				return;
-			}
 			golos.api.getAccounts([newAcc], function(err, result) {
 				if (err || result.length == 0) {
 					self.state.account = 'error';
@@ -76,11 +71,6 @@ var app = new Vue({
 		'settings.signatory': function(newAcc, oldAcc) {
 			this.state.signatory = 'processing';
 			var self = this;
-			if (this.state.node != 'ok')
-			{
-				this.state.signatory = 'error';
-				return;
-			}
 			golos.api.getAccounts([newAcc], function(err, result) {
 				if (err || result.length == 0) {
 					self.state.signatory = 'error';
@@ -145,11 +135,14 @@ var app = new Vue({
 			var active_approvals_to_add = [];
 			var posting_approvals_to_add = [];
 
-			if (this.proposal.required_owner_approvals.includes(this.settings.signatory))
+			if (this.proposal.required_owner_approvals.includes(this.settings.signatory) &&
+				!this.proposal.available_owner_approvals.includes(this.settings.signatory))
 				owner_approvals_to_add.push(this.settings.signatory);
-			if (this.proposal.required_active_approvals.includes(this.settings.signatory))
+			if (this.proposal.required_active_approvals.includes(this.settings.signatory) &&
+				!this.proposal.available_active_approvals.includes(this.settings.signatory))
 				active_approvals_to_add.push(this.settings.signatory);
-			if (this.proposal.required_posting_approvals.includes(this.settings.signatory))
+			if (this.proposal.required_posting_approvals.includes(this.settings.signatory) &&
+				!this.proposal.available_posting_approvals.includes(this.settings.signatory))
 				posting_approvals_to_add.push(this.settings.signatory);
 
 			var author = this.proposal.author;
