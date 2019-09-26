@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<!-- unsafe-eval and unsafe-inline for Vue.js -->
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' wconnect-src 'self' wss://api.golos.blckchnd.com/ws wss://golos.lexa.host/ws wss://golos.solox.world/ws; script-src 'self' 'unsafe-eval'; child-src 'none';">
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+
 		<title>GolosMultisigInterface</title>
 
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+		<link rel="stylesheet" href="./deps/css/bulma-pageloader.min.css">
 
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+		<link rel="stylesheet" href="./deps/css/bulma.min.css">
 
-		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.css" rel="stylesheet">
+		<link rel="stylesheet" href="./deps/fontawesome/css/all.css">
 
-		<link rel="stylesheet" href="./bulma-pageloader.min.css">
 
-		<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+		<link rel="stylesheet" href="./deps/css/simplemde.min.css">
+		<script src="./deps/js/simplemde.min.js"></script>
+
 		<!-- версия для разработки, отображает полезные предупреждения в консоли -->
-		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+		<script src="./deps/js/vue.js"></script>
 		<!-- production-версия, оптимизированная для размера и скорости 
-	  <script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
-		<script src="./golos.min.js"></script>
-		<script src="./lodash.clonedeep.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+
+		<script src="./deps/js/golos.min.js"></script>
+
+		<script src="./deps/js/lodash.clonedeep.js"></script>
 	</head>
 
 	<body>
