@@ -41,6 +41,8 @@ var app = new Vue({
 	},
 	watch: {
 		'settings.node': function (newNode, oldNode) {
+			if (newNode == oldNode)
+				return;
 			this.state.node = 'processing';
 			var self = this;
 			golos.config.set('websocket', newNode);
@@ -54,6 +56,8 @@ var app = new Vue({
 			});
 		},
 		'settings.account': function (newAcc, oldAcc) {
+			if (newAcc == oldAcc)
+				return;
 			this.state.account = 'processing';
 			var self = this;
 			golos.api.getAccounts([newAcc], function(err, result) {
@@ -69,6 +73,8 @@ var app = new Vue({
 			});
 		},
 		'settings.signatory': function(newAcc, oldAcc) {
+			if (newAcc == oldAcc)
+				return;
 			this.state.signatory = 'processing';
 			var self = this;
 			golos.api.getAccounts([newAcc], function(err, result) {
@@ -377,6 +383,7 @@ var app = new Vue({
 		},
 		showProposalApproved: function() {
 			this.state.statusModalTitle = 'Proposal approved'
+			this.state.statusModalContent = 'Proposal successfully approved';
 			this.$nextTick(function(){this.state.statusModal = true});
 		},
 		showProposalCreated: function(author, title) {
@@ -397,6 +404,8 @@ var app = new Vue({
 			for(var pair of searchParams) {
 				params[pair[0]] = pair[1]; 
 			}
+			if (params.node)
+				this.settings.node = params.node;
 			if (params.multisig)
 				this.settings.account = params.multisig;
 			if (params.signatory)
