@@ -468,7 +468,7 @@ var app = new Vue({
 	},
 	mounted: function() {
 		window.addEventListener('popstate', this.onpopstateCallback, false);
-		this.settings.node = 'wss://api.golos.blckchnd.com/ws';
+		this.settings.node = 'wss://golos.lexa.host/ws';
 		this.updatePage(window.location.search);
 	},
 })
