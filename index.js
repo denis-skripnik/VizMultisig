@@ -1,6 +1,6 @@
 history.replaceState({locationSearch: window.location.search}, 'GolosMultisigInterface', window.location.origin + window.location.pathname + window.location.search);
 
-golos.config.set('websocket', 'wss://api.golos.blckchnd.com/ws');
+golos.config.set('websocket', 'wss://golos.lexa.host/ws');
 
 var app = new Vue({
 	el: '#app',
@@ -384,18 +384,21 @@ var app = new Vue({
 		showProposalApproved: function() {
 			this.state.statusModalTitle = 'Proposal approved'
 			this.state.statusModalContent = 'Proposal successfully approved';
+			this.state.pageLoading = false;
 			this.$nextTick(function(){this.state.statusModal = true});
 		},
 		showProposalCreated: function(author, title) {
 			this.state.statusModalTitle = 'Proposal created'
 			this.state.statusModalContent = 'Proposal link: https://worthless-man.github.io/GolosMultisig/index.html?page=review&author=' +
 				encodeURI(author) + '&title=' + encodeURI(title);
+			this.state.pageLoading = false;
 			this.$nextTick(function(){this.state.statusModal = true});
 		},
 		showError: function(err) {
 			console.error(err);
 			this.state.statusModalTitle = 'Error';
 			this.state.statusModalContent = err;
+			this.state.pageLoading = false;
 			this.$nextTick(function(){this.state.statusModal = true});
 		},
 		updatePage: function(newLocationSearch, noPush) {
@@ -404,8 +407,10 @@ var app = new Vue({
 			for(var pair of searchParams) {
 				params[pair[0]] = pair[1]; 
 			}
-			if (params.node)
+			if (params.node) {
 				this.settings.node = params.node;
+				golos.config.set('websocket', params.node);
+			}
 			if (params.multisig)
 				this.settings.account = params.multisig;
 			if (params.signatory)
