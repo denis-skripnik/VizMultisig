@@ -2,7 +2,7 @@ Vue.component('delegate_vesting_shares-component', {
 	template: `
 <div class="tile is-parent">
 	<div class="tile is-child notification has-background-info">
-		<label class="label has-text-centered">Delegate GOLOS Power</label>
+		<label class="label has-text-centered">Delegate VIZ Shares</label>
 		<div class="container">
 			<div class="field">
 				<label class="label">Delegator (from)</label>
@@ -22,7 +22,7 @@ Vue.component('delegate_vesting_shares-component', {
 				</span>
 				</p>
 			</div>
-			<label class="label">Amount (in GOLOS)</label>
+			<label class="label">Amount (in VIZ)</label>
 			<div class="field has-addons">
 				<div class="control is-expanded has-icons-left">
 				<input class="input" type="number" v-model.lazy="amount" :disabled="editable == false">
@@ -33,7 +33,7 @@ Vue.component('delegate_vesting_shares-component', {
 				<div class="control">
 					<div class="select">
 						<select disabled>
-							<option>GOLOS Power</option>
+							<option>VIZ Shares</option>
 						</select>
 					</div>
 				</div>
@@ -66,13 +66,13 @@ Vue.component('delegate_vesting_shares-component', {
 			set: function(newValue) {
 				newValue = Number.parseFloat(newValue);
 				newValue = newValue * this.vests_per_steem;
-				this.update('vesting_shares', newValue.toFixed(6) + ' GESTS');
+				this.update('vesting_shares', newValue.toFixed(6) + ' SHARES');
 			},
 		},
 	},
 	mounted: function() {
 		var self = this;
-		golos.api.getDynamicGlobalProperties(function(err, result) {
+		viz.api.getDynamicGlobalProperties(function(err, result) {
 			if (!err) {
 				self.total_vesting_fund_shares = result.total_vesting_shares;
 				self.total_vesting_fund_steem = result.total_vesting_fund_steem;

@@ -158,7 +158,7 @@ Vue.component('account_update-component', {
 		loadAuthorities() {
 			var self = this;
 			if (this.value.account) {
-				golos.api.getAccounts([this.value.account], function(err, res) {
+				viz.api.getAccounts([this.value.account], function(err, res) {
 					if (res.length == 1) {
 						self.authorities.owner = res[0].owner;
 						self.authorities.active = res[0].active;

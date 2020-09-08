@@ -2,7 +2,7 @@ Vue.component('transfer_to_vesting-component', {
 	template: `
 <div class="tile is-parent">
 	<div class="tile is-child notification has-background-info">
-		<label class="label has-text-centered">Transfer to vesting (Golos -> Golos Power)</label>
+		<label class="label has-text-centered">Transfer to vesting (Viz -> Viz Shares)</label>
 		<div class="container">
 			<div class="field">
 				<label class="label">From</label>
@@ -33,7 +33,7 @@ Vue.component('transfer_to_vesting-component', {
 				<div class="control">
 				<div class="select">
 					<select disabled>
-						<option>GOLOS</option>
+						<option>VIZ</option>
 					</select>
 				</div>
 				</div>
@@ -58,7 +58,7 @@ Vue.component('transfer_to_vesting-component', {
 				if (isNaN(newValue))
 					newValue = 0;
 				newValue = newValue.toFixed(3);
-				var newAmount = newValue + ' GOLOS';
+				var newAmount = newValue + ' VIZ';
 				this.update('amount', newAmount);
 			},
 		},

@@ -1,6 +1,6 @@
-history.replaceState({locationSearch: window.location.search}, 'GolosMultisigInterface', window.location.origin + window.location.pathname + window.location.search);
+history.replaceState({locationSearch: window.location.search}, 'VizMultisigInterface', window.location.origin + window.location.pathname + window.location.search);
 
-golos.config.set('websocket', 'wss://golos.lexa.host/ws');
+viz.config.set('websocket', 'https://viz.lexai.host');
 
 var app = new Vue({
 	el: '#app',
@@ -45,8 +45,8 @@ var app = new Vue({
 				return;
 			this.state.node = 'processing';
 			var self = this;
-			golos.config.set('websocket', newNode);
-			golos.api.getDynamicGlobalProperties(function(err, result) {
+			viz.config.set('websocket', newNode);
+			viz.api.getDynamicGlobalProperties(function(err, result) {
 				if (err) {
 					self.state.node = 'error';
 				} else {
@@ -60,7 +60,7 @@ var app = new Vue({
 				return;
 			this.state.account = 'processing';
 			var self = this;
-			golos.api.getAccounts([newAcc], function(err, result) {
+			viz.api.getAccounts([newAcc], function(err, result) {
 				if (err || result.length == 0) {
 					self.state.account = 'error';
 				} else {
@@ -77,7 +77,7 @@ var app = new Vue({
 				return;
 			this.state.signatory = 'processing';
 			var self = this;
-			golos.api.getAccounts([newAcc], function(err, result) {
+			viz.api.getAccounts([newAcc], function(err, result) {
 				if (err || result.length == 0) {
 					self.state.signatory = 'error';
 				} else
@@ -114,7 +114,7 @@ var app = new Vue({
 				return;
 			var key = this.activeKey;
 			var self = this;
-			golos.broadcast.proposalCreate(key,
+			viz.broadcast.proposalCreate(key,
 				this.proposal.author,
 				this.proposal.title,
 				this.proposal.memo,
@@ -153,7 +153,7 @@ var app = new Vue({
 
 			var author = this.proposal.author;
 			var title = this.proposal.title;
-			golos.broadcast.proposalUpdate(key,
+			viz.broadcast.proposalUpdate(key,
 				author,
 				title,
 				active_approvals_to_add,
@@ -207,38 +207,24 @@ var app = new Vue({
 		},
 		getOperation: function(type) {
 			switch (type) {
-				case 'vote':
-					return {voter: this.settings.account, author: '', permlink: '', weight: 0};
+				case 'award':
+					return {initiator: this.settings.account, receiver: '', custom_sequence: 0, energy: 0, memo: '', beneficiaries: []};
 				case 'transfer':
-					return {from: this.settings.account, to: '', amount: '0.000 GOLOS', memo: ''};
+					return {from: this.settings.account, to: '', amount: '0.000 VIZ', memo: ''};
 				case 'delegate_vesting_shares':
-					return {delegator: this.settings.account, delegatee: '', vesting_shares: '0.000000 GESTS'};
-				case 'limit_order_create':
-					return {owner: this.settings.account, orderid: Math.ceil(Date.now() / 1000), amount_to_sell: "1.000 GOLOS", min_to_receive: "1.000 GBG", fill_or_kill: false, expiration: "1969-12-31T23:59:59"}
+					return {delegator: this.settings.account, delegatee: '', vesting_shares: '0.000000 SHARES'};
 				case 'account_witness_vote':
 					return {account: this.settings.account, witness: '', approve: true};
-				case 'convert':
-					return {owner: this.settings.account, requestid: Math.ceil(Date.now() / 1000), amount: '0.000 GBG'};
 				case 'account_update':
 					return {
 					    account: this.settings.account,
     				    memo_key: 'GLS1111111111111111111111111111111114T1Anm',
     				    json_metadata: "",
     				};
-				case 'comment':
-					return {
-						    parent_author: '',
-    					    parent_permlink: '',
-    					    author: this.settings.account,
-    					    permlink: '',
-    					    title: "",
-    					    body: "",
-    					    json_metadata: "{}"
-    					};
 				case 'transfer_to_vesting':
-					return {from: this.settings.account, to: this.settings.account, amount: '0.000 GOLOS'};
+					return {from: this.settings.account, to: this.settings.account, amount: '0.000 VIZ'};
 				case 'withdraw_vesting':
-					return {account: this.settings.account, vesting_shares: '0.000000 GESTS'}
+					return {account: this.settings.account, vesting_shares: '0.000000 SHARES'}
 			}
 		},
 		previewProposal: function(author, title) {
@@ -262,7 +248,7 @@ var app = new Vue({
 		findProposal: function(author, title) {
 			this.state.pageLoading = true;
 			var self = this;
-			golos.api.getProposedTransactions(author, this.proposals.length, 100, function(err, proposals) {
+			viz.api.getProposedTransactions(author, this.proposals.length, 100, function(err, proposals) {
 				if (err) {
 					self.showError(err);
 				} else {
@@ -273,7 +259,7 @@ var app = new Vue({
 						nicknames = mergeArrays(nicknames, proposal.required_active_approvals);
 						nicknames = mergeArrays(nicknames, proposal.required_posting_approvals);
 					}
-					golos.api.getAccounts(nicknames, function(error, accounts){
+					viz.api.getAccounts(nicknames, function(error, accounts){
 						if (error) {
 							self.showError(error);
 						}
@@ -326,7 +312,7 @@ var app = new Vue({
 		findAllProposals: function(author) {
 			this.state.pageLoading = true;
 			var self = this;
-			golos.api.getProposedTransactions(author, this.proposals.length, 100, function(err, proposals) {
+			viz.api.getProposedTransactions(author, this.proposals.length, 100, function(err, proposals) {
 				if (err) {
 					self.showError(err);
 				} else {
@@ -337,7 +323,7 @@ var app = new Vue({
 						nicknames = mergeArrays(nicknames, proposal.required_active_approvals);
 						nicknames = mergeArrays(nicknames, proposal.required_posting_approvals);
 					}
-					golos.api.getAccounts(nicknames, function(error, accounts){
+					viz.api.getAccounts(nicknames, function(error, accounts){
 						if (error) {
 							self.showError(error);
 						}
@@ -389,7 +375,7 @@ var app = new Vue({
 		},
 		showProposalCreated: function(author, title) {
 			this.state.statusModalTitle = 'Proposal created'
-			this.state.statusModalContent = 'Proposal link: https://worthless-man.github.io/GolosMultisig/index.html?page=review&author=' +
+			this.state.statusModalContent = 'Proposal link: https://worthless-man.github.io/VizMultisig/index.html?page=review&author=' +
 				encodeURI(author) + '&title=' + encodeURI(title);
 			this.state.pageLoading = false;
 			this.$nextTick(function(){this.state.statusModal = true});
@@ -409,7 +395,7 @@ var app = new Vue({
 			}
 			if (params.node) {
 				this.settings.node = params.node;
-				golos.config.set('websocket', params.node);
+				viz.config.set('websocket', params.node);
 			}
 			if (params.multisig)
 				this.settings.account = params.multisig;
@@ -426,7 +412,7 @@ var app = new Vue({
 				this.state.page = 'main';
 			}
 			if (!noPush)
-				history.pushState({locationSearch: newLocationSearch}, 'GolosMultisigInterface', window.location.origin + window.location.pathname + newLocationSearch);
+				history.pushState({locationSearch: newLocationSearch}, 'VizMultisigInterface', window.location.origin + window.location.pathname + newLocationSearch);
 		},
 		onpopstateCallback: function(event) {
 			if (history.state && history.state.locationSearch) {
@@ -473,7 +459,7 @@ var app = new Vue({
 	},
 	mounted: function() {
 		window.addEventListener('popstate', this.onpopstateCallback, false);
-		this.settings.node = 'wss://golos.lexa.host/ws';
+		this.settings.node = 'https://viz.lexai.host';
 		this.updatePage(window.location.search);
 	},
 })

@@ -2,11 +2,11 @@
 <html>
 	<head>
 		<!-- unsafe-eval and unsafe-inline for Vue.js -->
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' wss://api.golos.blckchnd.com/ws wss://golos.lexa.host/ws wss://golos.solox.world/ws; script-src 'self' 'unsafe-eval'; child-src 'none'; style-src 'self' 'unsafe-inline'">
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://node.viz.plus https://viz-node.dpos.space https://viz.lexai.host https://node.viz.media; script-src 'self' 'unsafe-eval'; child-src 'none'; style-src 'self' 'unsafe-inline'">
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-		<title>GolosMultisigInterface</title>
+		<title>VizMultisigInterface</title>
 
 		<link rel="stylesheet" href="./deps/css/bulma-pageloader.min.css">
 
@@ -23,7 +23,7 @@
 		<!-- production-версия, оптимизированная для размера и скорости 
 		<script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
 
-		<script src="./deps/js/golos.min.js"></script>
+		<script src="./deps/js/viz.min.js"></script>
 
 		<script src="./deps/js/lodash.clonedeep.js"></script>
 	</head>
@@ -281,11 +281,9 @@
 							<p class="menu-label">Monetary</p>
 							<ul class="menu-list">
 								<li><a @click="newOperation('transfer')">Transfer</a></li>
-								<li><a @click="newOperation('transfer_to_vesting')">Transfer Golos to Golos Power</a></li>
-								<li><a @click="newOperation('withdraw_vesting')">Transfer Golos Power to Golos</a></li>
-								<li><a @click="newOperation('delegate_vesting_shares')">Delegate Golos Power</a></li>
-								<li><a @click="newOperation('convert')">Convert GBG</a></li>
-								<li><a @click="newOperation('limit_order_create')">Exchange order</a></li>
+								<li><a @click="newOperation('transfer_to_vesting')">Transfer VIZ to VIZ Shares</a></li>
+								<li><a @click="newOperation('withdraw_vesting')">Transfer Viz Shares to VIZ</a></li>
+								<li><a @click="newOperation('delegate_vesting_shares')">Delegate Viz Shares</a></li>
 							</ul>
 							<p class="menu-label">Government</p>
 							<ul class="menu-list">
@@ -293,8 +291,7 @@
 							</ul>
 							<p class="menu-label">Social</p>
 							<ul class="menu-list">
-								<li><a @click="newOperation('vote')">Vote</a></li>
-								<li><a @click="newOperation('comment')">Post</a></li>
+								<li><a @click="newOperation('award')">Award</a></li>
 							</ul>
 						</aside>
 					</modal-info-component>
@@ -307,10 +304,7 @@
 		<script src="./components/simplemde-component.js"></script>
 		<script src="./components/modal-info-component.js"></script>
 		<script src="./components/pageloader-component.js"></script>
-		<script src="./components/convert-component.js"></script>
-		<script src="./components/comment-component.js"></script>
-		<script src="./components/vote-component.js"></script>
-		<script src="./components/limit_order_create-component.js"></script>
+		<script src="./components/award-component.js"></script>
 		<script src="./components/account_witness_vote-component.js"></script>
 		<script src="./components/account_update-component.js"></script>
 		<script src="./components/transfer-component.js"></script>

@@ -30,14 +30,7 @@ Vue.component('transfer-component', {
 					<i class="fas fa-coins"></i>
 				</span>
 				</div>
-				<div class="control">
-				<div class="select">
-					<select v-model="currency" :disabled="editable == false">
-						<option>GOLOS</option>
-						<option>GBG</option>
-					</select>
-				</div>
-				</div>
+					<input type="hidden" v-model="currency" :disabled="editable == false" value="VIZ">
 			</div>
 			<div class="field">
 				<label class="label">Memo</label>
