@@ -215,7 +215,9 @@ var app = new Vue({
 					return {delegator: this.settings.account, delegatee: '', vesting_shares: '0.000000 SHARES'};
 				case 'account_witness_vote':
 					return {account: this.settings.account, witness: '', approve: true};
-				case 'account_update':
+					case 'committee_worker_create_request':
+						return {creator: this.settings.account, url: '', worker: '', required_amount_min: '0.000 VIZ', required_amount_max: '0.000 VIZ', duration: 0};
+					case 'account_update':
 					return {
 					    account: this.settings.account,
     				    memo_key: 'GLS1111111111111111111111111111111114T1Anm',
