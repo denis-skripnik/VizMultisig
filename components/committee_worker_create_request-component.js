@@ -5,15 +5,6 @@ Vue.component('committee_worker_create_request-component', {
 		<label class="label has-text-centered">Committee worker create request</label>
 		<div class="container">
 			<div class="field">
-				<label class="label">Creator</label>
-				<p class="control has-icons-left">
-				<input class="input" type="text" :value="value.account" @change="update('account', $event.target.value.trim())" :disabled="editable == false">
-				<span class="icon is-small is-left">
-					<i class="fas fa-user-circle"></i>
-				</span>
-				</p>
-			</div>
-			<div class="field">
 				<label class="label">Url</label>
 				<p class="control has-icons-left">
 				<input class="input" type="text" :value="value.url" @change="update('url', $event.target.value.trim())" :disabled="editable == false">
@@ -70,16 +61,32 @@ Vue.component('committee_worker_create_request-component', {
 		value: Object,
 		editable: Boolean,
 	},
-	data: function() {
-		return {
-			vote: ((this.value.approve == true) ? 'Vote' : 'Unvote'),
-		}
-	},
 	computed: {
-	},
-	watch: {
-		vote: function(newVal) {
-			this.update('approve', ((newVal== 'Vote') ? true : false));
+		required_amount_min: {
+			get: function() {
+				return this.value.required_amount_min.split(' ')[0];
+			},
+			set: function(newValue) {
+				newValue = Number.parseFloat(newValue);
+				if (isNaN(newValue))
+					newValue = 0;
+				newValue = newValue.toFixed(3);
+				var newAmount = newValue + ' VIZ';
+				this.update('required_amount_min', newAmount);
+			},
+		},
+		required_amount_max: {
+			get: function() {
+				return this.value.required_amount_max.split(' ')[0];
+			},
+			set: function(newValue) {
+				newValue = Number.parseFloat(newValue);
+				if (isNaN(newValue))
+					newValue = 0;
+				newValue = newValue.toFixed(3);
+				var newAmount = newValue + ' VIZ';
+				this.update('required_amount_max', newAmount);
+			},
 		},
 	},
 	methods: {

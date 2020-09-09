@@ -51,13 +51,13 @@ Vue.component('delegate_vesting_shares-component', {
 	data: function() {
 		return {
 			total_vesting_fund_shares: '',
-			total_vesting_fund_steem: '',
+			total_vesting_fund: '',
 		};
 	},
 	computed: {
 		vests_per_steem: function() {
 			return parseFloat(this.total_vesting_fund_shares.split(' ')[0]) /
-				parseFloat(this.total_vesting_fund_steem.split(' ')[0]);
+				parseFloat(this.total_vesting_fund.split(' ')[0]);
 		},
 		amount: {
 			get: function() {
@@ -75,7 +75,7 @@ Vue.component('delegate_vesting_shares-component', {
 		viz.api.getDynamicGlobalProperties(function(err, result) {
 			if (!err) {
 				self.total_vesting_fund_shares = result.total_vesting_shares;
-				self.total_vesting_fund_steem = result.total_vesting_fund_steem;
+				self.total_vesting_fund = result.total_vesting_fund;
 			}
 		});
 	},
