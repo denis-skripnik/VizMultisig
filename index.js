@@ -217,7 +217,11 @@ var app = new Vue({
 					return {account: this.settings.account, witness: '', approve: true};
 					case 'committee_worker_create_request':
 						return {creator: this.settings.account, url: '', worker: '', required_amount_min: '0.000 VIZ', required_amount_max: '0.000 VIZ', duration: 0};
-					case 'account_update':
+						case 'committee_vote_request':
+							return {voter: this.settings.account, request_id: 1, vote_percent: 0};
+						case 'committee_worker_cancel_request':
+							return {creator: this.settings.account, request_id: 1};
+						case 'account_update':
 					return {
 					    account: this.settings.account,
     				    memo_key: 'GLS1111111111111111111111111111111114T1Anm',
