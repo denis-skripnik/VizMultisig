@@ -19,34 +19,34 @@ Vue.component('dashboard-proposal-component', {
 	computed: {
 		requiredSignatories: function() {
 			var self = this;
-			let owner = this.proposal.required_owner_approvals.filter(function(item){return !self.proposal.available_owner_approvals.includes(item)});
+			let owner = this.proposal.required_master_approvals.filter(function(item){return !self.proposal.available_master_approvals.includes(item)});
 			let active = this.proposal.required_active_approvals.filter(function(item){
-				return !self.proposal.available_owner_approvals.includes(item) &&
+				return !self.proposal.available_master_approvals.includes(item) &&
 						!self.proposal.available_active_approvals.includes(item);
 			});
-			let posting = this.proposal.required_posting_approvals.filter(function(item){
-				return !self.proposal.available_owner_approvals.includes(item) &&
+			let regular = this.proposal.required_regular_approvals.filter(function(item){
+				return !self.proposal.available_master_approvals.includes(item) &&
 						!self.proposal.available_active_approvals.includes(item) &&
-						!self.proposal.available_posting_approvals.includes(item);
+						!self.proposal.available_regular_approvals.includes(item);
 			});
-			return this.mergeArrays(owner, this.mergeArrays(active, posting));
+			return this.mergeArrays(owner, this.mergeArrays(active, regular));
 		},
 		signatories: function() {
-			return this.mergeArrays(this.mergeArrays(this.proposal.required_owner_approvals, this.proposal.required_active_approvals), this.proposal.required_posting_approvals);
+			return this.mergeArrays(this.mergeArrays(this.proposal.required_master_approvals, this.proposal.required_active_approvals), this.proposal.required_regular_approvals);
 		},
 		isWarning: function() {
-			var req_owner = this.proposal.required_owner_approvals.includes(this.signatory) &&
-							!this.proposal.available_owner_approvals.includes(this.signatory);
+			var req_owner = this.proposal.required_master_approvals.includes(this.signatory) &&
+							!this.proposal.available_master_approvals.includes(this.signatory);
 			
 			var req_active = this.proposal.required_active_approvals.includes(this.signatory) &&
-							!this.proposal.available_owner_approvals.includes(this.signatory) &&
+							!this.proposal.available_master_approvals.includes(this.signatory) &&
 							!this.proposal.available_active_approvals.includes(this.signatory);
 			
-			var req_posting = this.proposal.required_posting_approvals.includes(this.signatory) &&
-							!this.proposal.available_owner_approvals.includes(this.signatory) &&
+			var req_regular = this.proposal.required_regular_approvals.includes(this.signatory) &&
+							!this.proposal.available_master_approvals.includes(this.signatory) &&
 							!this.proposal.available_active_approvals.includes(this.signatory) &&
-							!this.proposal.available_posting_approvals.includes(this.signatory)
-			return req_owner || req_active || req_posting;
+							!this.proposal.available_regular_approvals.includes(this.signatory)
+			return req_owner || req_active || req_regular;
 		},
 		isPrimary: function() {
 			return !this.isWarning;

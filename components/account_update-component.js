@@ -13,33 +13,33 @@ Vue.component('account_update-component', {
 				</span>
 				</div>
 			</div>
-			<div v-if="value.owner" class="has-background-link notification">
-				<button v-if="editable" @click="removeSection('owner')" class="button" style="position: absolute;right: 0.5rem;top: 0.5rem;">
+			<div v-if="value.master_authority" class="has-background-link notification">
+				<button v-if="editable" @click="removeSection('master_authority')" class="button" style="position: absolute;right: 0.5rem;top: 0.5rem;">
 					<span class="icon is-small">
 						<i class="fa fa-times"></i>
 					</span>
 				</button>
-				<label class="label">Owner authorities</label>
+				<label class="label">master_authority authorities</label>
 				<div class="field has-addons">
 					<div class="control is-expanded">
 					<input class="input" type="text" value="Weight theshold" disabled>
 					</div>
 					<div class="control">
-					<input class="input" type="number" :value="value.owner.weight_threshold" @change="updateTreshold('owner', $event.target.value.trim())" :disabled="editable == false">
+					<input class="input" type="number" :value="value.master_authority.weight_threshold" @change="updateTreshold('master_authority', $event.target.value.trim())" :disabled="editable == false">
 					</div>
 				</div>
-				<div v-for="(item, index) in value.owner.account_auths" class="field has-addons">
+				<div v-for="(item, index) in value.master_authority.account_auths" class="field has-addons">
 					<div class="control is-expanded has-icons-left">
-					<input class="input" type="text" :value="item[0]" @change="updateSection('owner', index, $event.target.value.trim(), undefined)" :disabled="editable == false">
+					<input class="input" type="text" :value="item[0]" @change="updateSection('master_authority', index, $event.target.value.trim(), undefined)" :disabled="editable == false">
 					<span class="icon is-small is-left">
 						<i class="fas fa-user-circle"></i>
 					</span>
 					</div>
 					<div class="control">
-					<input class="input" type="number" :value="item[1]" @change="updateSection('owner', index, undefined, $event.target.value.trim())" :disabled="editable == false">
+					<input class="input" type="number" :value="item[1]" @change="updateSection('master_authority', index, undefined, $event.target.value.trim())" :disabled="editable == false">
 					</div>
 					<div v-if="editable" class="control">
-						<button class="button is-error" @click="removeAuthority('owner', index)">
+						<button class="button is-error" @click="removeAuthority('master_authority', index)">
 							<span class="icon is-small">
 								<i class="fas fa-times"></i>
 							</span>
@@ -47,11 +47,11 @@ Vue.component('account_update-component', {
 					</div>
 				</div>
 				<div v-if="editable">
-					<button class="button is-primary is-fullwidth" @click="addAuthority('owner')">Add another signatory</button>
+					<button class="button is-primary is-fullwidth" @click="addAuthority('master_authority')">Add another signatory</button>
 				</div>
 			</div>
 			<div v-else-if="editable">
-				<button class="button is-primary is-fullwidth" @click="addSeciton('owner')">Change owner authority</button>
+				<button class="button is-primary is-fullwidth" @click="addSeciton('master_authority')">Change master_authority authority</button>
 			</div>
 
 			<div v-if="value.active" class="has-background-link notification">
@@ -95,33 +95,33 @@ Vue.component('account_update-component', {
 				<button class="button is-primary is-fullwidth" @click="addSeciton('active')">Change active authority</button>
 			</div>
 
-			<div v-if="value.posting" class="has-background-link notification">
-				<button v-if="editable" @click="removeSection('posting')" class="button" style="position: absolute;right: 0.5rem;top: 0.5rem;">
+			<div v-if="value.regular_authority" class="has-background-link notification">
+				<button v-if="editable" @click="removeSection('regular_authority')" class="button" style="position: absolute;right: 0.5rem;top: 0.5rem;">
 					<span class="icon is-small">
 						<i class="fa fa-times"></i>
 					</span>
 				</button>
-				<label class="label">Posting authorities</label>
+				<label class="label">Regular authorities</label>
 				<div class="field has-addons">
 					<div class="control is-expanded">
 					<input class="input" type="text" value="Weight theshold" disabled>
 					</div>
 					<div class="control">
-					<input class="input" type="number" :value="value.posting.weight_threshold" @change="updateTreshold('posting', $event.target.value.trim())" :disabled="editable == false">
+					<input class="input" type="number" :value="value.regular_authority.weight_threshold" @change="updateTreshold('regular_authority', $event.target.value.trim())" :disabled="editable == false">
 					</div>
 				</div>
-				<div v-for="(item, index) in value.posting.account_auths" class="field has-addons">
+				<div v-for="(item, index) in value.regular_authority.account_auths" class="field has-addons">
 					<div class="control is-expanded has-icons-left">
-					<input class="input" type="text" :value="item[0]" @change="updateSection('posting', index, $event.target.value.trim(), undefined)" :disabled="editable == false">
+					<input class="input" type="text" :value="item[0]" @change="updateSection('regular_authority', index, $event.target.value.trim(), undefined)" :disabled="editable == false">
 					<span class="icon is-small is-left">
 						<i class="fas fa-user-circle"></i>
 					</span>
 					</div>
 					<div class="control">
-					<input class="input" type="number" :value="item[1]" @change="updateSection('posting', index, undefined, $event.target.value.trim())" :disabled="editable == false">
+					<input class="input" type="number" :value="item[1]" @change="updateSection('regular_authority', index, undefined, $event.target.value.trim())" :disabled="editable == false">
 					</div>
 					<div v-if="editable" class="control">
-						<button class="button is-error" @click="removeAuthority('posting', index)">
+						<button class="button is-error" @click="removeAuthority('regular_authority', index)">
 							<span class="icon is-small">
 								<i class="fas fa-times"></i>
 							</span>
@@ -129,11 +129,11 @@ Vue.component('account_update-component', {
 					</div>
 				</div>
 				<div v-if="editable">
-					<button class="button is-primary is-fullwidth" @click="addAuthority('posting')">Add another signatory</button>
+					<button class="button is-primary is-fullwidth" @click="addAuthority('regular_authority')">Add another signatory</button>
 				</div>
 			</div>
 			<div v-else-if="editable">
-				<button class="button is-primary is-fullwidth" @click="addSeciton('posting')">Change posting authority</button>
+				<button class="button is-primary is-fullwidth" @click="addSeciton('regular_authority')">Change regular authority</button>
 			</div>
 		</div>
 		<button v-if="editable" class="delete" @click="suicide()">
@@ -148,9 +148,9 @@ Vue.component('account_update-component', {
 	data: function() {
 		return {
 			authorities: {
-				owner: {weight_threshold: 1, account_auths: [], key_auths: []},
+				master_authority: {weight_threshold: 1, account_auths: [], key_auths: []},
 				active: {weight_threshold: 1, account_auths: [], key_auths: []},
-				posting: {weight_threshold: 1, account_auths: [], key_auths: []},
+				regular authority: {weight_threshold: 1, account_auths: [], key_auths: []},
 			}
 		}
 	},
@@ -160,9 +160,9 @@ Vue.component('account_update-component', {
 			if (this.value.account) {
 				viz.api.getAccounts([this.value.account], function(err, res) {
 					if (res.length == 1) {
-						self.authorities.owner = res[0].owner;
-						self.authorities.active = res[0].active;
-						self.authorities.posting = res[0].posting;
+						self.authorities.master_authority = res[0].master_authority;
+						self.authorities.active_authority = res[0].active_authority;
+						self.authorities.regular_authority = res[0].regular_authority;
 					}
 				});
 			}

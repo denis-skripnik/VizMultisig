@@ -137,19 +137,19 @@ var app = new Vue({
 			var key = this.settings.signatoryKey;
 			var self = this;
 
-			var owner_approvals_to_add = [];
+			var master_approvals_to_add = [];
 			var active_approvals_to_add = [];
-			var posting_approvals_to_add = [];
+			var regular_approvals_to_add = [];
 
-			if (this.proposal.required_owner_approvals.includes(this.settings.signatory) &&
-				!this.proposal.available_owner_approvals.includes(this.settings.signatory))
-				owner_approvals_to_add.push(this.settings.signatory);
+			if (this.proposal.required_master_approvals.includes(this.settings.signatory) &&
+				!this.proposal.available_master_approvals.includes(this.settings.signatory))
+				master_approvals_to_add.push(this.settings.signatory);
 			if (this.proposal.required_active_approvals.includes(this.settings.signatory) &&
 				!this.proposal.available_active_approvals.includes(this.settings.signatory))
 				active_approvals_to_add.push(this.settings.signatory);
-			if (this.proposal.required_posting_approvals.includes(this.settings.signatory) &&
-				!this.proposal.available_posting_approvals.includes(this.settings.signatory))
-				posting_approvals_to_add.push(this.settings.signatory);
+			if (this.proposal.required_regular_approvals.includes(this.settings.signatory) &&
+				!this.proposal.available_regular_approvals.includes(this.settings.signatory))
+				regular_approvals_to_add.push(this.settings.signatory);
 
 			var author = this.proposal.author;
 			var title = this.proposal.title;
@@ -158,10 +158,10 @@ var app = new Vue({
 				title,
 				active_approvals_to_add,
 				[], // active_approvals_to_remove
-				owner_approvals_to_add,
-				[], // owner_approvals_to_remove
-				posting_approvals_to_add,
-				[], // posting_approvals_to_remove
+				master_approvals_to_add,
+				[], // master_approvals_to_remove
+				regular_approvals_to_add,
+				[], // regular_approvals_to_remove
 				[], // key_approvals_to_add
 				[], // key_approvals_to_remove
 				[], // extensions
@@ -170,9 +170,9 @@ var app = new Vue({
 						self.showError(err)
 					} else {
 						var index = self.proposals.findIndex((prop) => {if (prop.author == author && prop.title == title) return true;});
-						self.proposals[index].available_owner_approvals = self.mergeArrays(self.proposals[index].available_owner_approvals, owner_approvals_to_add);
+						self.proposals[index].available_master_approvals = self.mergeArrays(self.proposals[index].available_master_approvals, master_approvals_to_add);
 						self.proposals[index].available_active_approvals = self.mergeArrays(self.proposals[index].available_active_approvals, active_approvals_to_add);
-						self.proposals[index].available_posting_approvals = self.mergeArrays(self.proposals[index].available_posting_approvals, posting_approvals_to_add);
+						self.proposals[index].available_regular_approvals = self.mergeArrays(self.proposals[index].available_regular_approvals, regular_approvals_to_add);
 						self.proposal = self.newProposal();
 						self.settings.signatoryKey = '';
 						self.showProposalApproved();
@@ -255,9 +255,9 @@ var app = new Vue({
 					mergeArrays = self.mergeArrays;
 					var nicknames = [];
 					for (proposal of proposals) {
-						nicknames = mergeArrays(nicknames, proposal.required_owner_approvals);
+						nicknames = mergeArrays(nicknames, proposal.required_master_approvals);
 						nicknames = mergeArrays(nicknames, proposal.required_active_approvals);
-						nicknames = mergeArrays(nicknames, proposal.required_posting_approvals);
+						nicknames = mergeArrays(nicknames, proposal.required_regular_approvals);
 					}
 					viz.api.getAccounts(nicknames, function(error, accounts){
 						if (error) {
@@ -265,33 +265,33 @@ var app = new Vue({
 						}
 						var accs = {};
 						for (account of accounts) {
-							accs[account.name] = {owner: account.owner, active: account.active, posting: account.posting};
+							accs[account.name] = {master_authority: account.master_authority, active_authority: account.active_authority, regular_authority: account.regular_authority};
 						}
 						for (proposal of proposals) {
-							var owner = [];
+							var master = [];
 							var active = [];
-							var posting = [];
-							for (acc of proposal.required_owner_approvals) {
-								if (accs[acc].owner.key_auths.length != 0) {
-									owner.push(acc)
+							var regular = [];
+							for (acc of proposal.required_master_approvals) {
+								if (accs[acc].master_authority.key_auths.length != 0) {
+									master.push(acc)
 								}
-								owner = mergeArrays(owner, accs[acc].owner.account_auths.map(function(val){return val[0]}));
+								master = mergeArrays(master, accs[acc].master_authority.account_auths.map(function(val){return val[0]}));
 							}
 							for (acc of proposal.required_active_approvals) {
-								if (accs[acc].active.key_auths.length != 0) {
+								if (accs[acc].active_authority.key_auths.length != 0) {
 									active.push(acc)
 								}
-								active = mergeArrays(active, accs[acc].active.account_auths.map(function(val){return val[0]}));
+								active = mergeArrays(active, accs[acc].active_authority.account_auths.map(function(val){return val[0]}));
 							}
-							for (acc of proposal.required_posting_approvals) {
-								if (accs[acc].posting.key_auths.length != 0) {
-									posting.push(acc)
+							for (acc of proposal.required_regular_approvals) {
+								if (accs[acc].regular_authority.key_auths.length != 0) {
+									regular.push(acc)
 								}
-								posting = mergeArrays(posting, accs[acc].posting.account_auths.map(function(val){return val[0]}));
+								regular = mergeArrays(regular, accs[acc].regular_authority.account_auths.map(function(val){return val[0]}));
 							}
-							proposal.required_owner_approvals = owner;
+							proposal.required_master_approvals = master;
 							proposal.required_active_approvals = active;
-							proposal.required_posting_approvals = posting;
+							proposal.required_regular_approvals = regular;
 							self.proposals.push(cloneDeep(proposal));
 						}
 						if (proposals.length == 100) {
@@ -319,9 +319,9 @@ var app = new Vue({
 					mergeArrays = self.mergeArrays;
 					var nicknames = [];
 					for (proposal of proposals) {
-						nicknames = mergeArrays(nicknames, proposal.required_owner_approvals);
+						nicknames = mergeArrays(nicknames, proposal.required_master_approvals);
 						nicknames = mergeArrays(nicknames, proposal.required_active_approvals);
-						nicknames = mergeArrays(nicknames, proposal.required_posting_approvals);
+						nicknames = mergeArrays(nicknames, proposal.required_regular_approvals);
 					}
 					viz.api.getAccounts(nicknames, function(error, accounts){
 						if (error) {
@@ -329,33 +329,33 @@ var app = new Vue({
 						}
 						var accs = {};
 						for (account of accounts) {
-							accs[account.name] = {owner: account.owner, active: account.active, posting: account.posting};
+							accs[account.name] = {master_authority: account.master_authority, active_authority: account.active_authority, regular_authority: account.regular_authority};
 						}
 						for (proposal of proposals) {
-							var owner = [];
+							var master = [];
 							var active = [];
-							var posting = [];
-							for (acc of proposal.required_owner_approvals) {
-								if (accs[acc].owner.key_auths.length != 0) {
-									owner.push(acc)
+							var regular = [];
+							for (acc of proposal.required_master_approvals) {
+								if (accs[acc].master_authority.key_auths.length != 0) {
+									master.push(acc)
 								}
-								owner = mergeArrays(owner, accs[acc].owner.account_auths.map(function(val){return val[0]}));
+								master = mergeArrays(master, accs[acc].master_authority.account_auths.map(function(val){return val[0]}));
 							}
 							for (acc of proposal.required_active_approvals) {
-								if (accs[acc].active.key_auths.length != 0) {
+								if (accs[acc].active_authority.key_auths.length != 0) {
 									active.push(acc)
 								}
-								active = mergeArrays(active, accs[acc].active.account_auths.map(function(val){return val[0]}));
+								active = mergeArrays(active, accs[acc].active_authority.account_auths.map(function(val){return val[0]}));
 							}
-							for (acc of proposal.required_posting_approvals) {
-								if (accs[acc].posting.key_auths.length != 0) {
-									posting.push(acc)
+							for (acc of proposal.required_regular_approvals) {
+								if (accs[acc].regular_authority.key_auths.length != 0) {
+									regular.push(acc)
 								}
-								posting = mergeArrays(posting, accs[acc].posting.account_auths.map(function(val){return val[0]}));
+								regular = mergeArrays(regular, accs[acc].regular_authority.account_auths.map(function(val){return val[0]}));
 							}
-							proposal.required_owner_approvals = owner;
+							proposal.required_master_approvals = master;
 							proposal.required_active_approvals = active;
-							proposal.required_posting_approvals = posting;
+							proposal.required_regular_approvals = regular;
 							self.proposals.push(cloneDeep(proposal));
 						}
 						if (proposals.length == 100) {
@@ -422,15 +422,15 @@ var app = new Vue({
 	},
 	computed: {
 		signatoryKeyRequirement: function() {
-			if (this.proposal.required_owner_approvals != undefined &&
+			if (this.proposal.required_master_approvals != undefined &&
 				this.proposal.required_active_approvals != undefined &&
-				this.proposal.required_posting_approvals != undefined) {
-				if (this.proposal.required_owner_approvals.includes(this.settings.signatory))
-				return 'Owner';
+				this.proposal.required_regular_approvals != undefined) {
+				if (this.proposal.required_master_approvals.includes(this.settings.signatory))
+				return 'Master';
 				else if (this.proposal.required_active_approvals.includes(this.settings.signatory))
 				return 'Active';
-				else if (this.proposal.required_posting_approvals.includes(this.settings.signatory))
-				return 'Posting';
+				else if (this.proposal.required_regular_approvals.includes(this.settings.signatory))
+				return 'Regular';
 				else
 				return 'Signatory';
 			} else {
