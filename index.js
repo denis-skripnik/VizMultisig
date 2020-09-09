@@ -375,7 +375,7 @@ var app = new Vue({
 		},
 		showProposalCreated: function(author, title) {
 			this.state.statusModalTitle = 'Proposal created'
-			this.state.statusModalContent = 'Proposal link: https://worthless-man.github.io/VizMultisig/index.html?page=review&author=' +
+			this.state.statusModalContent = 'Proposal link: https://denis-skripnik.github.io/VizMultisig/index.html?page=review&author=' +
 				encodeURI(author) + '&title=' + encodeURI(title);
 			this.state.pageLoading = false;
 			this.$nextTick(function(){this.state.statusModal = true});
